@@ -18,6 +18,7 @@ This document is an (ongoing) introduction to blockchain, Ethereum, smart contra
   - [1.4.1 What is a smart contract](#141-what-is-a-smart-contract)
   - [1.4.2 Ethereum networks](#142-ethereum-networks)
 - [2. Solidity Basics](#2-solidity-basics)
+  - [2.1 Types](#21-types)
 - [3. Introduction to Truffle](#3-introduction-to-truffle)
   - [3.1 Creating a Truffle project](#31-creating-a-truffle-project)
   - [3.2 Compiling smart contracts](#32-compiling-smart-contracts)
@@ -79,6 +80,44 @@ Public test nets are used to test Ethereum applications before final deployment 
 # 2. Solidity Basics
 
 The full documentation for Solidity can be found [here](https://docs.soliditylang.org/en/v0.8.11/index.html). 
+
+Consider the following simple example
+
+```
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity >=0.4.16 <0.9.0;
+
+contract SimpleStorage {
+    uint storedData;
+
+    function set(uint x) public {
+        storedData = x;
+    }
+
+    function get() public view returns (uint) {
+        return storedData;
+    }
+}
+```
+
+The first line is a machine-readable **SPDX License Identifier**, more details about which can be found [here](https://spdx.dev).
+
+The `pragma` keyword is used to establish some compiler checks. In the example above, there is a **version pragma**, which rejects compilation with future versions that may introduce incompatible changes. 
+
+A state variable called `storedData` of type `uint` is then declared. The functions `set()` and `get()` are provided and can be queried to alter `storedData`.
+
+## 2.1 Types
+
+**Booleans:** `bool` can take on `true` or `false`.
+**Operators:**
+- `!` negation
+- `&&` and
+- `||` or
+- `==` equality
+- `!=` inequality
+
+**Integers:** `int/uint` refer to signed and unsigned integers. Default size is 256 bits, although any 8 bit increment can be used `int8 -> int256` and `uint8 - uint256`.
+
 
 
 
