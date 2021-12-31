@@ -19,11 +19,19 @@ This document is an (ongoing) introduction to blockchain, Ethereum, smart contra
   - [1.4.2 Ethereum networks](#142-ethereum-networks)
 - [2. Solidity Basics](#2-solidity-basics)
   - [2.1 Types](#21-types)
+    - [2.1.1 Address types](#211-address-types)
+    - [2.1.2 Contract types](#212-contract-types)
+    - [2.1.3 Enums](#213-enums)
+    - [2.1.4 User defined value types](#214-user-defined-value-types)
+  - [2.2 Reference types](#22-reference-types)
+    - [2.2.1 Arrays](#221-arrays)
+  - [2.3 Cheatsheet](#23-cheatsheet)
 - [3. Introduction to Truffle](#3-introduction-to-truffle)
   - [3.1 Creating a Truffle project](#31-creating-a-truffle-project)
   - [3.2 Compiling smart contracts](#32-compiling-smart-contracts)
-  - [3.3 Local testing environment setup](#33-local-testing-environment-setup)
+  - [3.3 Local environment setup](#33-local-environment-setup)
   - [3.4 Migrations](#34-migrations)
+  - [3.5 Interfacing with a smart contract](#35-interfacing-with-a-smart-contract)
 
 # 1. Blockchain Overview
 
@@ -108,8 +116,9 @@ A state variable called `storedData` of type `uint` is then declared. The functi
 
 ## 2.1 Types
 
-**Booleans:** `bool` can take on `true` or `false`.
-**Operators:**
+These are just some points that may differ from other languages, for the full description, check out the [docs](https://docs.soliditylang.org/en/v0.8.11/types.html#value-types).
+
+**Booleans:** `bool` can take on `true` or `false`. Boolean operators are:
 - `!` negation
 - `&&` and
 - `||` or
@@ -119,7 +128,49 @@ A state variable called `storedData` of type `uint` is then declared. The functi
 **Integers:** `int/uint` refer to signed and unsigned integers. Default size is 256 bits, although any 8 bit increment can be used `int8 -> int256` and `uint8 - uint256`.
 
 
+**Negating an expression:**The expression `-x` is equivalent to `T(0)-x` where `T` refers to the type of `x`. This can only be applied to signed types. In addition, note that all arithmetic is checked for over/underflow by default, although this can be disabled. 
 
+**Division:** Since the type of the result of an operation is always the type of one of the operands, division on integers always results in an integer. In Solidity, division rounds towards zero.
+
+### 2.1.1 Address types
+
+The address type has two forms:
+- `address`: Holds a 20-byte value (which is the size of an Ethereum address)
+- `address payable`: Same as `address` but with additional members `transfer` and `send`
+
+Implicit conversions allowed:
+- `address payable` to `address`
+- To and from `address` and `uint160`, integer literals, `bytes20`, and contract types
+  
+Explicit conversions required:
+- `address` or contract types to `address payable` via `payable(<address>)`
+
+### 2.1.2 Contract types
+
+Every contract defines its own type. One can implicitly convert contracts to contracts that they inherit from. In addition, contracts can be explicitly converted to and from the `address` type. 
+
+### 2.1.3 Enums
+
+Enums are one way to create a user-defined type in Solidity. They are explicitly convertible to and from all integer types but implicit conversion is not allowed. The explicit conversion from integer checks at runtime that the value lies inside the range of the enum and causes a **Panic error** otherwise. Enums require at least one member, and its default value when declared is the first member. Enums cannot have more than 256 members.
+
+### 2.1.4 User defined value types
+
+A user defined value type allows creating a zero cost abstraction over an elementary value type. This is similar to an alias, but with stricter type requirements.
+
+A user defined value type is defined using `type C is V`, where `C` is the name of the newly introduced type and `V` has to be a built-in value type (the “underlying type”). The function `C.wrap` is used to convert from the underlying type to the custom type. Similarly, the function `C.unwrap` is used to convert from the custom type to the underlying type.
+
+## 2.2 Reference types
+
+If you use a reference type, you always have to explicitly provide the data area where the type is stored: `memory` (whose lifetime is limited to an external function call), `storage` (the location where the state variables are stored, where the lifetime is limited to the lifetime of a contract) or `calldata` (special data location that contains the function arguments).
+
+### 2.2.1 Arrays
+
+Arrays either have compile-time fixed size, `T[k]` or dynamic size `T[]` where `T` is the element type of the array. 
+
+In Solidity, `X[k]` always means an array containing three elements of type `X`, even if `X` is itself an array. Thus, higher dimension arrays can be constructed as `T[][k]`. 
+
+
+## 2.3 [Cheatsheet](https://docs.soliditylang.org/en/v0.8.11/cheatsheet.html)
 
 # 3. Introduction to Truffle
 
@@ -162,7 +213,7 @@ On your first run, this command will compile all contracts and on subsequent run
 truffle compile --all
 ```
 
-## 3.3 Local testing environment setup
+## 3.3 Local environment setup
 
 Before being able to migrate contracts to the blockchain, a local blockchain needs to be running. A good option when using Truffle is to run [Ganache](https://trufflesuite.com/ganache/), which will generate a blockchain running locally on port 7545. 
 
@@ -176,6 +227,11 @@ To run all migrations from the beginning, call
 ```
 truffle migrate --reset
 ```
+
+## 3.5 Interfacing with a smart contract
+
+After deploying a smart contract locally and interacting with it via the console, it may be desirable to create a front-end so that users can interact with the contract. Refer to the **pet-shop-tutorial** folder and look at **app.js** to see how instantiating web3 and the contract work. In the directory, the **src** folder contains the genral front-end code. 
+
 
 
 
